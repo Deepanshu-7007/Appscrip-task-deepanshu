@@ -74,7 +74,7 @@ const Footer = () => {
           <form aria-label="Newsletter Signup">
             <input
               type="email"
-              placeholder="अपना ईमेल पता दर्ज करें..."
+              placeholder="Enter your email...."
               aria-label="Your email address"
               required
             />
@@ -110,7 +110,7 @@ const Footer = () => {
           </ul>
         </div>
         <div className="footer-links">
-          <h4>जल्दी लिंक्स</h4>
+          <h4>Quick Link</h4>
           <ul>
             <li><a href="/orders">{currentText.orderShipping}</a></li>
             <li><a href="/join">{currentText.joinSeller}</a></li>
