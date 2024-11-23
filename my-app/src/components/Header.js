@@ -89,13 +89,14 @@ const Header = () => {
       </div>
       <div className="logo">LOGO</div>
       <nav className={`nav ${menuOpen ? 'open' : ''}`}>
-        <ul className="nav-links">
-          <li><a href="#">{t.shop}</a></li>
-          <li><a href="#">{t.skills}</a></li>
-          <li><a href="#">{t.stories}</a></li>
-          <li><a href="#">{t.about}</a></li>
-          <li><a href="#">{t.contactUs}</a></li>
-        </ul>
+      <ul className="nav-links">
+        <li><a href="/shop">{t.shop}</a></li>
+        <li><a href="/skills">{t.skills}</a></li>
+        <li><a href="/stories">{t.stories}</a></li>
+        <li><a href="/about">{t.about}</a></li>
+         <li><a href="/contact">{t.contactUs}</a></li>
+    </ul>
+
       </nav>
 
       <div className="icons">
