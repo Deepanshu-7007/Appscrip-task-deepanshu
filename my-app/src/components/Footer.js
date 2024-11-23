@@ -15,9 +15,19 @@ const Footer = () => {
       currencyInfo: "Transactions will be processed in USD and corresponding references are available on request.",
       followUs: "FOLLOW US",
       accepts: "mettā muse ACCEPTS",
-    },
-    es: {
-      // ... Spanish translations ...
+      aboutUs: "About Us",
+      stories: "Stories",
+      artisans: "Artisans",
+      boutiques: "Boutiques",
+      contact: "Contact Us",
+      compliance: "EU Compliance Documents",
+      orderShipping: "Orders & Shipping",
+      joinSeller: "Join/Login as a Seller",
+      paymentPricing: "Payment & Pricing",
+      returnsRefunds: "Returns & Refunds",
+      faq: "FAQs",
+      privacyPolicy: "Privacy Policy",
+      termsConditions: "Terms & Conditions",
     },
     hi: {
       newsletterTitle: "पहले जानें",
@@ -28,10 +38,32 @@ const Footer = () => {
       currencyInfo: "लेन-देन USD में प्रोसेस किए जाएंगे और अनुरोध पर संबंधित संदर्भ उपलब्ध होंगे।",
       followUs: "हमारा अनुसरण करें",
       accepts: "mettā muse स्वीकृत करता है",
+      aboutUs: "हमारे बारे में",
+      stories: "कहानियाँ",
+      artisans: "कारीगर",
+      boutiques: "बुटीक",
+      contact: "संपर्क करें",
+      compliance: "यूरोपीय संघ अनुपालन दस्तावेज",
+      orderShipping: "ऑर्डर और शिपिंग",
+      joinSeller: "एक विक्रेता के रूप में जुड़ें/लॉगिन करें",
+      paymentPricing: "भुगतान और मूल्य निर्धारण",
+      returnsRefunds: "रिटर्न और धनवापसी",
+      faq: "FAQs",
+      privacyPolicy: "गोपनीयता नीति",
+      termsConditions: "नियम और शर्तें",
     },
   };
 
   const currentText = text[language] || text.en;
+
+  // Define click handlers for social media buttons
+  const handleInstagramClick = () => {
+    window.location.href = "https://www.instagram.com"; // Redirect to Instagram
+  };
+
+  const handleFacebookClick = () => {
+    window.location.href = "https://www.facebook.com"; // Redirect to Facebook
+  };
 
   return (
     <footer className="footer">
@@ -47,7 +79,7 @@ const Footer = () => {
               required
             />
             <button type="submit" aria-label="Subscribe to Newsletter">
-              सब्सक्राइब करें
+              {language === "hi" ? "सब्सक्राइब करें" : "Subscribe"}
             </button>
           </form>
         </div>
@@ -69,24 +101,24 @@ const Footer = () => {
         <div className="footer-links">
           <h4>mettā muse</h4>
           <ul>
-            <li><a href="/about">हमारे बारे में</a></li>
-            <li><a href="/stories">कहानियां</a></li>
-            <li><a href="/artisans">कारीगर</a></li>
-            <li><a href="/boutiques">बुटीक</a></li>
-            <li><a href="/contact">संपर्क करें</a></li>
-            <li><a href="/compliance">यूरोपीय संघ अनुपालन दस्तावेज</a></li>
+            <li><a href="/about">{currentText.aboutUs}</a></li>
+            <li><a href="/stories">{currentText.stories}</a></li>
+            <li><a href="/artisans">{currentText.artisans}</a></li>
+            <li><a href="/boutiques">{currentText.boutiques}</a></li>
+            <li><a href="/contact">{currentText.contact}</a></li>
+            <li><a href="/compliance">{currentText.compliance}</a></li>
           </ul>
         </div>
         <div className="footer-links">
           <h4>जल्दी लिंक्स</h4>
           <ul>
-            <li><a href="/orders">ऑर्डर और शिपिंग</a></li>
-            <li><a href="/join">एक विक्रेता के रूप में जुड़ें/लॉगिन करें</a></li>
-            <li><a href="/payment">भुगतान और मूल्य निर्धारण</a></li>
-            <li><a href="/returns">रिटर्न और धनवापसी</a></li>
-            <li><a href="/faq">FAQs</a></li>
-            <li><a href="/privacy">Privacy Policy</a></li>
-            <li><a href="/terms">Terms & Conditions</a></li>
+            <li><a href="/orders">{currentText.orderShipping}</a></li>
+            <li><a href="/join">{currentText.joinSeller}</a></li>
+            <li><a href="/payment">{currentText.paymentPricing}</a></li>
+            <li><a href="/returns">{currentText.returnsRefunds}</a></li>
+            <li><a href="/faq">{currentText.faq}</a></li>
+            <li><a href="/privacy">{currentText.privacyPolicy}</a></li>
+            <li><a href="/terms">{currentText.termsConditions}</a></li>
           </ul>
         </div>
       </div>
@@ -95,14 +127,23 @@ const Footer = () => {
         <div className="social-media">
           <h4>{currentText.followUs}</h4>
           <div className="social-links">
-            <a href="#" aria-label="Instagram">
+            <button 
+              onClick={handleInstagramClick} 
+              aria-label="Instagram" 
+              className="social-button"
+            >
               <i className="fa fa-instagram"></i>
-            </a>
-            <a href="#" aria-label="Facebook">
+            </button>
+            <button 
+              onClick={handleFacebookClick} 
+              aria-label="Facebook" 
+              className="social-button"
+            >
               <i className="fa fa-facebook"></i>
-            </a>
+            </button>
           </div>
         </div>
+
         <div className="payment-options">
           <h4>{currentText.accepts}</h4>
           <div className="payment-icons">

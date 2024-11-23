@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useCart } from "./CartContext";
 import { useWishlist } from "./WishlistContext";
-import { useLanguage } from "./LanguageContext";  // Importing useLanguage
-import Footer from "./Footer";  // Footer component
-import { FaShoppingCart, FaHeart } from 'react-icons/fa'; // Importing icons for cart and wishlist
+import { useLanguage } from "./LanguageContext";
+import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 import "./ProductsPage.css";
 
-// Translation object
 const translations = {
   EN: {
     filters: "Filters",
@@ -14,7 +12,6 @@ const translations = {
     showFilters: "Show Filters",
     itemsAvailable: "items available",
     sortBy: "Sort By",
-    recommended: "Recommended",
     popular: "Popular",
     priceLowToHigh: "Price: Low to High",
     priceHighToLow: "Price: High to Low",
@@ -23,6 +20,7 @@ const translations = {
     addToCart: "Add to Cart",
     addToWishlist: "Add to Wishlist",
     removeFromWishlist: "Remove from Wishlist",
+    addedToCart: "Added to Cart",
   },
   HI: {
     filters: "फ़िल्टर",
@@ -30,7 +28,6 @@ const translations = {
     showFilters: "फ़िल्टर दिखाएं",
     itemsAvailable: "उत्पाद उपलब्ध हैं",
     sortBy: "क्रमबद्ध करें",
-    recommended: "सिफ़ारिश की गई",
     popular: "लोकप्रिय",
     priceLowToHigh: "कीमत: कम से अधिक",
     priceHighToLow: "कीमत: अधिक से कम",
@@ -39,6 +36,7 @@ const translations = {
     addToCart: "कार्ट में जोड़ें",
     addToWishlist: "विशलिस्ट में जोड़ें",
     removeFromWishlist: "विशलिस्ट से हटाएं",
+    addedToCart: "कार्ट में जोड़ दिया गया",
   }
 };
 
@@ -47,16 +45,6 @@ const ProductsPage = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    idealFor: ["Men", "Women", "Baby & Kids"],
-    occasion: ["Casual", "Formal", "Party", "Sportswear"],
-    work: ["Office", "Casual", "Business", "Formal"],
-    fabric: ["Cotton", "Silk", "Wool", "Polyester"],
-    segment: ["Luxury", "Budget", "Mid-range"],
-    suitableFor: ["Adults", "Kids"],
-    rawMaterial: ["Organic", "Synthetic"],
-    pattern: ["Solid", "Striped", "Checked", "Printed"],
-  });
   const [selectedFilters, setSelectedFilters] = useState({
     idealFor: [],
     occasion: [],
@@ -67,14 +55,24 @@ const ProductsPage = () => {
     rawMaterial: [],
     pattern: [],
   });
-  const [isRecommended, setIsRecommended] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupProduct, setPopupProduct] = useState(null);
-  const [quantities, setQuantities] = useState({}); // Store quantities for each product
+  const [quantities] = useState({});
 
-  const { addToCart, cartItems } = useCart();
+  const { addToCart, cartItems, updateCartItemQuantity } = useCart(); // Ensure updateCartItemQuantity is defined in context
   const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
-  const { language } = useLanguage(); // Get language from context
+  const { language } = useLanguage();
+
+  const filters = {
+    idealFor: ["Men", "Women", "Baby & Kids"],
+    occasion: ["Casual", "Formal", "Party", "Sportswear"],
+    work: ["Office", "Casual", "Business", "Formal"],
+    fabric: ["Cotton", "Silk", "Wool", "Polyester"],
+    segment: ["Luxury", "Budget", "Mid-range"],
+    suitableFor: ["Adults", "Kids"],
+    rawMaterial: ["Organic", "Synthetic"],
+    pattern: ["Solid", "Striped", "Checked", "Printed"],
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -93,7 +91,6 @@ const ProductsPage = () => {
     fetchProducts();
   }, []);
 
-  // Updated filter application logic
   const applyFilters = useMemo(() => {
     return products.filter((product) => {
       return Object.keys(selectedFilters).every((filterType) => {
@@ -127,14 +124,6 @@ const ProductsPage = () => {
     setSelectedFilters(updatedSelectedFilters);
   };
 
-  const handleRecommendedClick = () => {
-    setIsRecommended(!isRecommended);
-    const recommended = isRecommended
-      ? products
-      : products.filter((product) => product.rating?.rate >= 4);
-    setFilteredProducts(recommended);
-  };
-
   const sortProducts = (option) => {
     let sortedProducts = [...filteredProducts];
     switch (option) {
@@ -157,7 +146,18 @@ const ProductsPage = () => {
   };
 
   const handleAddToCart = (product) => {
-    addToCart(product);
+    const quantity = quantities[product.id] || 1;
+    // Check if product already exists in the cart
+    const existingCartItem = cartItems.find(item => item.id === product.id);
+
+    if (existingCartItem) {
+      // Update the quantity of the existing cart item
+      updateCartItemQuantity(product.id, existingCartItem.quantity + quantity);
+    } else {
+      // Add the product to the cart with the selected quantity
+      addToCart(product, quantity);
+    }
+
     setPopupProduct(product);
     setShowPopup(true);
     setTimeout(() => setShowPopup(false), 3000);
@@ -171,14 +171,7 @@ const ProductsPage = () => {
     }
   };
 
-  const handleQuantityChange = (product, delta) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [product.id]: Math.max((prev[product.id] || 1) + delta, 1),
-    }));
-  };
-
-  const t = translations[language]; // Access the translations based on the selected language
+  const t = translations[language];
 
   if (loading) return <div className="loading-spinner">Loading...</div>;
 
@@ -237,47 +230,33 @@ const ProductsPage = () => {
                   {product.rating && `Rating: ${product.rating.rate} / 5`}
                 </div>
 
-                {/* Quantity control */}
-                <div className="product-quantity">
-                  <button onClick={() => handleQuantityChange(product, -1)}>-</button>
-                  <span>{quantities[product.id] || 1}</span>
-                  <button onClick={() => handleQuantityChange(product, 1)}>+</button>
+                <div className="action-buttons">
+                  <button
+                    className="add-to-cart"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    <FaShoppingCart /> {t.addToCart}
+                  </button>
+                  <button
+                    className={`add-to-wishlist ${wishlistItems.some((item) => item.id === product.id) ? "added" : ""}`}
+                    onClick={() => handleAddToWishlist(product)}
+                  >
+                    <FaHeart /> {wishlistItems.some((item) => item.id === product.id) ? t.removeFromWishlist : t.addToWishlist}
+                  </button>
                 </div>
-
-                {/* Add to Cart Button */}
-                <button
-                  className={`add-to-cart-button ${cartItems.some(item => item.id === product.id) ? 'in-cart' : ''}`}
-                  onClick={() => handleAddToCart(product)}
-                  disabled={cartItems.some(item => item.id === product.id)}
-                >
-                  <FaShoppingCart className="cart-icon" />
-                  {cartItems.some(item => item.id === product.id) ? "Added to Cart" : t.addToCart}
-                </button>
-
-                {/* Add to Wishlist Button */}
-                <button
-                  className={`wishlist-button ${wishlistItems.some(item => item.id === product.id) ? 'added' : ''}`}
-                  onClick={() => handleAddToWishlist(product)}
-                >
-                  <FaHeart className="wishlist-icon" />
-                  {wishlistItems.some(item => item.id === product.id) ? t.removeFromWishlist : t.addToWishlist}
-                </button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="no-products">{t.noProductsFound}</div>
+          <div>{t.noProductsFound}</div>
         )}
       </div>
 
-      {/* Popup message */}
       {showPopup && popupProduct && (
-        <div className="popup-message">
-          <span>Added {popupProduct.title} to cart</span>
+        <div className="popup">
+          {popupProduct.title} {t.addedToCart}
         </div>
       )}
-
-      <Footer />
     </div>
   );
 };

@@ -12,6 +12,7 @@ const translations = {
     about: "ABOUT",
     contactUs: "CONTACT US",
     yourCartIsEmpty: "Your cart is empty.",
+    yourWishlistIsEmpty: "Your wishlist is empty.",
     goToCheckout: "Go to Checkout",
     searchPlaceholder: "Search for products...",
   },
@@ -22,6 +23,7 @@ const translations = {
     about: "हमारे बारे में",
     contactUs: "संपर्क करें",
     yourCartIsEmpty: "आपकी गाड़ी खाली है।",
+    yourWishlistIsEmpty: "आपकी इच्छा सूची खाली है।",
     goToCheckout: "चेकआउट पर जाएं",
     searchPlaceholder: "उत्पाद खोजें...",
   },
@@ -30,14 +32,15 @@ const translations = {
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false); // Track wishlist visibility
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  
+
   const { cartItems } = useCart();
   const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
-  const { language, setLanguage } = useLanguage(); // Use global language state
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     fetch("https://fakestoreapi.com/products")
@@ -65,9 +68,11 @@ const Header = () => {
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const toggleCart = () => setCartOpen(!cartOpen);
+  const toggleWishlist = () => setWishlistOpen(!wishlistOpen);
   const toggleSearch = () => setSearchOpen(!searchOpen);
 
-  const toggleWishlist = (product) => {
+  const toggleWishlistItem = (product) => {
+    if (!product) return;
     if (wishlistItems.some(item => item.id === product.id)) {
       removeFromWishlist(product.id);
     } else {
@@ -75,7 +80,7 @@ const Header = () => {
     }
   };
 
-  const t = translations[language]; // Translation helper based on selected language
+  const t = translations[language];
 
   return (
     <header className="header">
@@ -94,32 +99,48 @@ const Header = () => {
       </nav>
 
       <div className="icons">
-        <a href="#" className="icon search" onClick={toggleSearch}>
+        <button className="icon search" onClick={toggleSearch}>
           <i className="fa fa-search"></i>
-        </a>
-        <a href="#" className="icon wishlist">
+        </button>
+        <button className="icon wishlist" onClick={toggleWishlist}>
           <i className="fa fa-heart"></i>
           {wishlistItems.length > 0 && <span className="wishlist-badge">{wishlistItems.length}</span>}
-        </a>
-        <div className="icon cart" onClick={toggleCart}>
+        </button>
+        <button className="icon cart" onClick={toggleCart}>
           <i className="fa fa-shopping-cart"></i>
           {cartItems.length > 0 && <span className="cart-count">{cartItems.length}</span>}
-        </div>
+        </button>
 
-        {/* Language Selector */}
         <select
           className="language"
           value={language}
-          onChange={(e) => setLanguage(e.target.value)} // Update global language state
+          onChange={(e) => setLanguage(e.target.value)}
         >
           <option value="EN">English</option>
           <option value="HI">हिन्दी</option>
         </select>
 
-        <a href="#" className="icon user">
+        <button className="icon user">
           <i className="fa fa-user"></i>
-        </a>
+        </button>
       </div>
+
+      {wishlistOpen && (
+        <div className="wishlist-dropdown">
+          {wishlistItems.length === 0 ? (
+            <p>{t.yourWishlistIsEmpty}</p>
+          ) : (
+            <ul>
+              {wishlistItems.map((item) => (
+                <li key={item.id}>
+                  {item.title} - ${item.price}
+                  <button onClick={() => toggleWishlistItem(item)}>Remove</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {cartOpen && (
         <div className="cart-dropdown">
@@ -152,6 +173,9 @@ const Header = () => {
               filteredProducts.map((product) => (
                 <li key={product.id}>
                   <a href={`/product/${product.id}`}>{product.title}</a>
+                  <button onClick={() => toggleWishlistItem(product)}>
+                    {wishlistItems.some(item => item.id === product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                  </button>
                 </li>
               ))
             )}

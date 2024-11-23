@@ -25,7 +25,7 @@ body {
 .toggle-filters {
   display: block;
   margin-bottom: 15px;
-  padding: 12px;
+  padding: 14px;
   background-color: #333;
   color: #fff;
   border: none;
@@ -185,30 +185,32 @@ body {
   color: #888;
 }
 
+/* Add to Cart and Wishlist Button */
 .add-to-cart-button,
 .wishlist-button {
-  padding: 10px 16px;
-  margin: 8px 0;
+  padding: 12px 20px;
+  margin: 10px 0;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   width: 100%;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .add-to-cart-button {
   background-color: #4caf50;
-  color: #fff;
+  color: white;
 }
 
 .add-to-cart-button:hover {
   background-color: #45a049;
+  transform: scale(1.05);
 }
 
 .wishlist-button {
   background-color: #f44336;
-  color: #fff;
+  color: white;
 }
 
 .wishlist-button.active {
@@ -217,6 +219,36 @@ body {
 
 .wishlist-button:hover {
   background-color: #e57373;
+  transform: scale(1.05);
+}
+
+/* Quantity Control */
+.product-quantity {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.product-quantity button {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.product-quantity button:hover {
+  background-color: #ccc;
+}
+
+.product-quantity span {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
 }
 
 /* Pop-up Notification */
